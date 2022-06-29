@@ -9,7 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "table": "^6.8.0"
+    "table": "^6.8.0",
+    "uuid": "^8.3.2"
   },
   "type": "module"
 }

@@ -1,4 +1,4 @@
-const newCell = () => ({ player: "", army: [] });
+const newCell = () => ({ player: { name: "", id: 0 }, army: [] });
 
 const initBoard = ({ size }) =>
   Array(size)

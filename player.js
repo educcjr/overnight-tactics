@@ -8,26 +8,9 @@ const newPlayer = ({ x, y, id, name }) => ({
   army: [],
 });
 
-const playerToBoard = ({ pos, name }) => ({
+const playerToBoard = ({ pos, name, id }) => ({
   pos,
-  fn: (p) => ({ ...p, player: name }),
+  fn: (p) => ({ ...p, player: { name, id } }),
 });
 
-const updatePlayer = (players, playerId, updateFn) => {
-  const filteredPlayers = players.filter(({ id }) => id === playerId);
-
-  if (filteredPlayers.length > 1) {
-    throw "Two players with the same id.";
-  }
-  if (filteredPlayers.length === 0) {
-    throw "Player not found.";
-  }
-
-  const player = filteredPlayers[0];
-  return [
-    ...players.filter(({ id }) => id !== playerId),
-    { ...player, ...updateFn(player) },
-  ];
-};
-
-export { newPlayer, playerToBoard, updatePlayer };
+export { newPlayer, playerToBoard };

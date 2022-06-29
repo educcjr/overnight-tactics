@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import { newBoard, updateBoardPos } from "./board.js";
+import { newBoard, playerCampsToBoard, updateBoardPos } from "./board.js";
 import {
   POPULATION_GROWTH,
   POPULATION_PRODUCTION,
@@ -9,7 +9,7 @@ import {
   SQUAD_TRAINING_STEPS
 } from "./constants.js";
 import { updateListById } from "./helpers.js";
-import { newPlayer, playerToBoard } from "./player.js";
+import { newPlayer } from "./player.js";
 import { BoardCellUpdate, Game, Player, PlayerInput, Position, Squad } from "./types.js";
 
 // Starts a new game.
@@ -21,7 +21,7 @@ const newGame = ({ boardSize }: { boardSize: number }): Game => ({
 
 // Adds new player to `players` list the to the `board` as well.
 const addPlayer = ({ board, players }: Game, playerInput: PlayerInput): Partial<Game> => ({
-  board: updateBoardPos(board, playerToBoard(newPlayer(playerInput))),
+  board: playerCampsToBoard(newPlayer(playerInput)).reduce((acc, curr) => updateBoardPos(acc, curr), board),
   players: [...players, newPlayer(playerInput)],
 });
 
@@ -34,35 +34,40 @@ const addPlayer = ({ board, players }: Game, playerInput: PlayerInput): Partial<
 // - Increases `game#step`
 const nextStep = ({ step, players, board }: Game): Partial<Game> => {
   const updatedPlayers: Player[] = players.map(
-    ({ population, gold, training, army, ...player }) => ({
+    ({ camps, gold, army, ...player }) => ({
       ...player,
-      population: population + POPULATION_GROWTH,
-      gold: gold + population * POPULATION_PRODUCTION,
-      training: training
-        .map((t) => ({
-          ...t,
-          remainingSteps: t.remainingSteps - 1,
-        }))
-        .filter((t) => t.remainingSteps > 0),
+      gold: gold + camps.reduce((acc, curr) => acc + curr.population, 0) * POPULATION_PRODUCTION,
+      camps: camps.map((c) => ({
+        ...c,
+        population: c.population + POPULATION_GROWTH,
+        training: c.training
+          .map((t) => ({
+            ...t,
+            remainingSteps: t.remainingSteps - 1,
+          }))
+          .filter((t) => t.remainingSteps > 0)
+      })),
       army: [
         ...army.map((a): Squad =>
           a.nextPos ? { ...a, pos: a.nextPos, nextPos: undefined } : a
         ),
-        ...training
-          .filter((t) => t.remainingSteps === 1)
-          .map(({ type, soldiers, id }): Squad => ({
-            id: id || uuid(),
-            type,
-            soldiers,
-            pos: player.pos,
-            nextPos: undefined,
-          })),
+        ...camps.map((c) =>
+          c.training
+            .filter(t => t.remainingSteps === 1)
+            .map(({ type, soldiers, id }): Squad => ({
+              id: id || uuid(),
+              type,
+              soldiers,
+              pos: c.pos,
+              nextPos: undefined,
+            }))
+        ).flat(),
       ],
     })
   );
 
   const updatedBoard = [
-    ...updatedPlayers.map(playerToBoard),
+    ...updatedPlayers.map(playerCampsToBoard).flat(),
     ...updatedPlayers
       .map(({ army, id: playerId }) =>
         army.map(({ type, soldiers, pos, id }): BoardCellUpdate => ({
@@ -94,11 +99,10 @@ const consumeRes = (res: number, cost: number) => {
 };
 
 // Starts a squad traning. Training progress and completition happens on `nextStep` action.
-const trainSquad = ({ players }: Game, { playerId, id }: { playerId: string, id: string }): Partial<Game> => ({
-  players: updateListById(
-    players,
-    playerId,
-    ({ training, population, gold }) => ({
+const trainSquad = ({ players }: Game, { playerId, campId, id }: { playerId: string, campId: string, id: string }): Partial<Game> => ({
+  players: updateListById(players, playerId, ({ camps, gold }) => ({
+    camps: updateListById(camps, campId, ({ training, population }) => ({
+      population: consumeRes(population, SQUAD_POPULATION_COST),
       training: [
         ...training,
         {
@@ -108,9 +112,9 @@ const trainSquad = ({ players }: Game, { playerId, id }: { playerId: string, id:
           remainingSteps: SQUAD_TRAINING_STEPS,
         },
       ],
-      population: consumeRes(population, SQUAD_POPULATION_COST),
-      gold: consumeRes(gold, SQUAD_GOLD_COST),
-    })
+    })),
+    gold: consumeRes(gold, SQUAD_GOLD_COST),
+  })
   ),
 });
 

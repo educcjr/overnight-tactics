@@ -1,18 +1,18 @@
-import { BoardCellUpdate, Player, PlayerInput } from "./types.js";
+import { Camp, Player, PlayerInput, Position } from "./types.js";
 
-const newPlayer = ({ x, y, id, name }: PlayerInput): Player => ({
-  pos: { x, y },
+const newCamp = ({ id, pos }: { id: string, pos: Position }): Camp => ({
+  id,
+  pos,
+  population: 0,
+  training: [],
+});
+
+const newPlayer = ({ id, name, pos, campId }: PlayerInput): Player => ({
+  camps: [newCamp({ id: campId, pos })],
   id,
   name,
-  population: 0,
   gold: 0,
-  training: [],
   army: [],
 });
 
-const playerToBoard = ({ pos, name, id }: Player): BoardCellUpdate => ({
-  pos,
-  fn: (bc) => ({ ...bc, player: { name, id } }),
-});
-
-export { newPlayer, playerToBoard };
+export { newPlayer };

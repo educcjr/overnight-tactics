@@ -6,24 +6,34 @@ import {
   SQUAD_GOLD_COST,
   SQUAD_POPULATION_COST,
   SQUAD_SOLDIERS,
-  SQUAD_TRAINING_STEPS,
+  SQUAD_TRAINING_STEPS
 } from "./constants.js";
-import { newPlayer, playerToBoard } from "./player.js";
 import { updateListById } from "./helpers.js";
+import { newPlayer, playerToBoard } from "./player.js";
+import { BoardCellUpdate, Game, Player, PlayerInput, Position, Squad } from "./types.js";
 
-const newGame = ({ boardSize }) => ({
+// Starts a new game.
+const newGame = ({ boardSize }: { boardSize: number }): Game => ({
   board: initBoard({ size: boardSize }),
   players: [],
   step: 0,
 });
 
-const addPlayer = ({ board, players }, player) => ({
-  board: updateBoardPos(board, playerToBoard(newPlayer(player))),
-  players: [...players, newPlayer(player)],
+// Adds new player to `players` list the to the `board` as well.
+const addPlayer = ({ board, players }: Game, playerInput: PlayerInput): Partial<Game> => ({
+  board: updateBoardPos(board, playerToBoard(newPlayer(playerInput))),
+  players: [...players, newPlayer(playerInput)],
 });
 
-const nextStep = ({ step, players, board }) => {
-  const updatedPlayers = players.map(
+// Next game step.
+// - Increases players `population` and `gold`.
+// - Decreases training squads `remainingSteps`.
+// - Completes squad training by removing it and adding a new squad to the player's `army`.
+// - Moves squads.
+// - Renders a new `game#board`.
+// - Increases `game#step`
+const nextStep = ({ step, players, board }: Game): Partial<Game> => {
+  const updatedPlayers: Player[] = players.map(
     ({ population, gold, training, army, ...player }) => ({
       ...player,
       population: population + POPULATION_GROWTH,
@@ -35,17 +45,17 @@ const nextStep = ({ step, players, board }) => {
         }))
         .filter((t) => t.remainingSteps > 0),
       army: [
-        ...army.map((a) =>
-          a.nextPos ? { ...a, pos: a.nextPos, nextPos: null } : a
+        ...army.map((a): Squad =>
+          a.nextPos ? { ...a, pos: a.nextPos, nextPos: undefined } : a
         ),
         ...training
           .filter((t) => t.remainingSteps === 1)
-          .map(({ type, soldiers, id }) => ({
+          .map(({ type, soldiers, id }): Squad => ({
             id: id || uuid(),
             type,
             soldiers,
             pos: player.pos,
-            nextPos: null,
+            nextPos: undefined,
           })),
       ],
     })
@@ -55,7 +65,7 @@ const nextStep = ({ step, players, board }) => {
     ...updatedPlayers.map(playerToBoard),
     ...updatedPlayers
       .map(({ army, id: playerId }) =>
-        army.map(({ type, soldiers, pos, id }) => ({
+        army.map(({ type, soldiers, pos, id }): BoardCellUpdate => ({
           pos,
           fn: (p) => ({
             ...p,
@@ -76,14 +86,15 @@ const nextStep = ({ step, players, board }) => {
   };
 };
 
-const consumeRes = (res, cost) => {
+const consumeRes = (res: number, cost: number) => {
   if (res - cost < 0) {
     throw "Unavailable resources.";
   }
   return res - cost;
 };
 
-const trainSquad = ({ players }, { playerId, id }) => ({
+// Starts a squad traning. Training progress and completition happens on `nextStep` action.
+const trainSquad = ({ players }: Game, { playerId, id }: { playerId: string, id: string }): Partial<Game> => ({
   players: updateListById(
     players,
     playerId,
@@ -103,7 +114,8 @@ const trainSquad = ({ players }, { playerId, id }) => ({
   ),
 });
 
-const moveSquad = ({ players }, { playerId, squadId, dir }) => ({
+// Moves a squad. The squad is actually moved on `nextStep` action.
+const moveSquad = ({ players }: Game, { playerId, squadId, dir }: { playerId: string, squadId: string, dir: Position }): Partial<Game> => ({
   players: updateListById(players, playerId, ({ army }) => ({
     army: updateListById(army, squadId, ({ pos, ...squad }) => ({
       ...squad,

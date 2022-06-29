@@ -3,15 +3,15 @@ import {
   moveSquad,
   newGame,
   nextStep,
-  trainSquad,
+  trainSquad
 } from "./actions.js";
 import { gameState, setGame } from "./game.js";
 import { printGame } from "./print.js";
 
-const nextStepN = (t) =>
+const nextStepN = (t: number) =>
   Array(t)
-    .fill()
-    .forEach(() => setGame((g) => nextStep(g)));
+    .fill(null)
+    .forEach(() => setGame((g: any) => nextStep(g)));
 
 // ========== SIMULATION ==========
 
@@ -22,20 +22,25 @@ printGame(gameState()); // => 2 players on the board
 
 nextStepN(10);
 printGame(gameState()); // => sufficient ressources for squads
+
 setGame((g) => trainSquad(g, { playerId: "dudu", id: "1" }));
 printGame(gameState()); // => start squad training
+
 nextStepN(5);
 printGame(gameState()); // => squad training finished
+
 nextStepN(6);
 setGame((g) => trainSquad(g, { playerId: "dudu", id: "2" }));
-printGame(gameState()); // => another start squad training
+printGame(gameState()); // => another squad training
 
 nextStepN(3);
 printGame(gameState()); // => next day
+
 setGame((g) =>
   moveSquad(g, { playerId: "dudu", squadId: "1", dir: { x: 1, y: 1 } })
 );
 printGame(gameState()); // => squad preparing to move
+
 nextStepN(1);
 printGame(gameState()); // => squad moved
 

@@ -1,4 +1,4 @@
-const updateListById = (l, searchId, updateFn) => {
+const updateListById = <T extends { id: string }>(l: T[], searchId: string, updateFn: (item: T) => Partial<T>) => {
   const filtered = l.filter(({ id }) => id === searchId);
 
   if (filtered.length > 1) {
@@ -8,10 +8,10 @@ const updateListById = (l, searchId, updateFn) => {
     throw "Item not found.";
   }
 
-  const player = filtered[0];
+  const item = filtered[0];
   return [
     ...l.filter(({ id }) => id !== searchId),
-    { ...player, ...updateFn(player) },
+    { ...item, ...updateFn(item) },
   ];
 };
 

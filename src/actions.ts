@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import { newBoard, playerCampsToBoard, updateBoardPos } from "./board.js";
+import { newBoard, playerArmyToBoard, playerCampsToBoard, refreshBoard } from "./board.js";
 import {
   POPULATION_GROWTH,
   POPULATION_PRODUCTION,
@@ -21,7 +21,6 @@ const newGame = ({ boardSize }: { boardSize: number }): Game => ({
 
 // Adds new player to `players` list the to the `board` as well.
 const addPlayer = ({ board, players }: Game, playerInput: PlayerInput): Partial<Game> => ({
-  board: playerCampsToBoard(newPlayer(playerInput)).reduce((acc, curr) => updateBoardPos(acc, curr), board),
   players: [...players, newPlayer(playerInput)],
 });
 
@@ -66,27 +65,12 @@ const nextStep = ({ step, players, board }: Game): Partial<Game> => {
     })
   );
 
-  const updatedBoard = [
-    ...updatedPlayers.map(playerCampsToBoard).flat(),
-    ...updatedPlayers
-      .map(({ army, id: playerId }) =>
-        army.map(({ type, soldiers, pos, id }): BoardCellUpdate => ({
-          pos,
-          fn: (p) => ({
-            ...p,
-            army: [...p.army, { type, soldiers, id, playerId }],
-          }),
-        }))
-      )
-      .flat(),
-  ].reduce(
-    (acc, curr) => updateBoardPos(acc, curr),
-    newBoard({ size: board.length })
-  );
-
   return {
     step: step + 1,
-    board: updatedBoard,
+    board: refreshBoard(board.length, [
+      ...updatedPlayers.map(playerCampsToBoard).flat(),
+      ...updatedPlayers.map(playerArmyToBoard).flat(),
+    ]),
     players: updatedPlayers,
   };
 };

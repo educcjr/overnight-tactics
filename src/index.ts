@@ -18,6 +18,9 @@ const nextStepN = (t: number) =>
 setGame(() => newGame({ boardSize: 10 }));
 setGame((g) => addPlayer(g, { pos: { x: 2, y: 2 }, name: "Duu", id: "dudu", campId: '1' }));
 setGame((g) => addPlayer(g, { pos: { x: 7, y: 7 }, name: "Foo", id: "foo", campId: '1' }));
+printGame(gameState()); // => 2 players added
+
+nextStepN(1);
 printGame(gameState()); // => 2 players on the board
 
 nextStepN(10);

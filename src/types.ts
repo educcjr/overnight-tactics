@@ -56,4 +56,4 @@ type Game = {
   step: number;
 }
 
-export { PlayerInput, Player, Camp, Board, BoardCell, BoardCellUpdate, Position, Game, Squad }
+export { PlayerInput, Player, Camp, Board, BoardCell, BoardCellUpdate, Position, Game, TrainingSquad, Squad }

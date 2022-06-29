@@ -15,4 +15,11 @@ const updateListById = <T extends { id: string }>(l: T[], searchId: string, upda
   ];
 };
 
-export { updateListById };
+const consumeResource = (res: number, cost: number) => {
+  if (res - cost < 0) {
+    throw "Unavailable resources.";
+  }
+  return res - cost;
+};
+
+export { updateListById, consumeResource };

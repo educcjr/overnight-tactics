@@ -23,7 +23,7 @@ printGame(gameState()); // => 2 players added
 nextStepN(1);
 printGame(gameState()); // => 2 players on the board
 
-nextStepN(10);
+nextStepN(9);
 printGame(gameState()); // => sufficient ressources for squads
 
 setGame((g) => trainSquad(g, { playerId: "dudu", campId: "1", id: "1" }));
@@ -51,20 +51,14 @@ setGame((g) =>
   moveSquad(g, { playerId: "dudu", squadId: "1", dir: { x: 1, y: 0 } })
 );
 nextStepN(1);
-printGame(gameState()); // => squad moved
-
 setGame((g) =>
   moveSquad(g, { playerId: "dudu", squadId: "1", dir: { x: 1, y: 0 } })
 );
 nextStepN(1);
-printGame(gameState()); // => squad moved
-
 setGame((g) =>
   moveSquad(g, { playerId: "dudu", squadId: "1", dir: { x: 1, y: 0 } })
 );
 nextStepN(1);
-printGame(gameState()); // => squad moved
-
 setGame((g) =>
   moveSquad(g, { playerId: "dudu", squadId: "1", dir: { x: 1, y: 0 } })
 );

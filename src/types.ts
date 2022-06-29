@@ -1,13 +1,13 @@
 type Position = { x: number; y: number; }
 
-type TrainingSquad = {
+type TrainingTroop = {
   id: string;
   type: string;
   soldiers: number;
   remainingSteps: number;
 }
 
-type Squad = {
+type Troop = {
   id: string;
   type: string;
   soldiers: number;
@@ -19,7 +19,7 @@ type Camp = {
   id: string;
   pos: Position;
   population: number;
-  training: TrainingSquad[];
+  training: TrainingTroop[];
 }
 
 type PlayerInput = {
@@ -34,7 +34,7 @@ type Player = {
   name: string;
   camps: Camp[],
   gold: number;
-  army: Squad[];
+  army: Troop[];
 }
 
 type BoardCell = {
@@ -56,4 +56,4 @@ type Game = {
   step: number;
 }
 
-export { PlayerInput, Player, Camp, Board, BoardCell, BoardCellUpdate, Position, Game, TrainingSquad, Squad }
+export { PlayerInput, Player, Camp, Board, BoardCell, BoardCellUpdate, Position, Game, TrainingTroop, Troop }

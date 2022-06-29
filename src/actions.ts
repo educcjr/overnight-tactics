@@ -26,9 +26,9 @@ const addPlayer = ({ board, players }: Game, playerInput: PlayerInput): Partial<
 
 // Next game step.
 // - Increases players `population` and `gold`.
-// - Decreases training squads `remainingSteps`.
-// - Completes squad training by removing it and adding a new squad to the player's `army`.
-// - Moves squads.
+// - Decreases training troops `remainingSteps`.
+// - Completes troop training by removing it and adding a new troop to the player's `army`.
+// - Moves troops.
 // - Renders a new `game#board`.
 // - Increases `game#step`
 const nextStep = ({ step, players, board }: Game): Partial<Game> => {
@@ -92,8 +92,8 @@ const nextStep = ({ step, players, board }: Game): Partial<Game> => {
   };
 };
 
-// Starts a squad training. Training progress and completition happens on `nextStep` action.
-const trainSquad = ({ players }: Game, { playerId, campId, id }: { playerId: string, campId: string, id: string }): Partial<Game> => ({
+// Starts a troops training. Training progress and completition happens on `nextStep` action.
+const trainTroops = ({ players }: Game, { playerId, campId, id }: { playerId: string, campId: string, id: string }): Partial<Game> => ({
   players: updateListById(players, playerId, ({ camps, gold }) => ({
     camps: updateListById(camps, campId, ({ training, population }) => ({
       population: consumeResource(population, SQUAD_POPULATION_COST),
@@ -101,7 +101,7 @@ const trainSquad = ({ players }: Game, { playerId, campId, id }: { playerId: str
         ...training,
         {
           id: id,
-          type: "squad",
+          type: "troop",
           soldiers: SQUAD_SOLDIERS,
           remainingSteps: SQUAD_TRAINING_STEPS,
         },
@@ -112,14 +112,14 @@ const trainSquad = ({ players }: Game, { playerId, campId, id }: { playerId: str
   ),
 });
 
-// Moves a squad. The squad is actually moved on `nextStep` action.
-const moveSquad = ({ players }: Game, { playerId, squadId, dir }: { playerId: string, squadId: string, dir: Position }): Partial<Game> => ({
+// Moves a troop. The troop is actually moved on `nextStep` action.
+const moveTroops = ({ players }: Game, { playerId, troopId, dir }: { playerId: string, troopId: string, dir: Position }): Partial<Game> => ({
   players: updateListById(players, playerId, ({ army }) => ({
-    army: updateListById(army, squadId, ({ pos, ...squad }) => ({
-      ...squad,
+    army: updateListById(army, troopId, ({ pos, ...troop }) => ({
+      ...troop,
       nextPos: { x: pos.x + dir.x, y: pos.y + dir.y },
     })),
   })),
 });
 
-export { newGame, addPlayer, nextStep, trainSquad, moveSquad };
+export { newGame, addPlayer, nextStep, trainTroops, moveTroops };

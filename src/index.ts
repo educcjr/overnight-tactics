@@ -1,9 +1,9 @@
 import {
   addPlayer,
-  moveSquad,
+  moveTroops,
   newGame,
   nextStep,
-  trainSquad
+  trainTroops
 } from "./actions.js";
 import { gameState, setGame } from "./game.js";
 import { printGame } from "./print.js";
@@ -24,43 +24,43 @@ nextStepN(1);
 printGame(gameState()); // => 2 players on the board
 
 nextStepN(9);
-printGame(gameState()); // => sufficient ressources for squads
+printGame(gameState()); // => sufficient ressources for troops
 
-setGame((g) => trainSquad(g, { playerId: "dudu", campId: "1", id: "1" }));
-printGame(gameState()); // => start squad training
+setGame((g) => trainTroops(g, { playerId: "dudu", campId: "1", id: "1" }));
+printGame(gameState()); // => start troop training
 
 nextStepN(5);
-printGame(gameState()); // => squad training finished
+printGame(gameState()); // => troop training finished
 
 nextStepN(6);
-setGame((g) => trainSquad(g, { playerId: "dudu", campId: "1", id: "2" }));
-printGame(gameState()); // => another squad training
+setGame((g) => trainTroops(g, { playerId: "dudu", campId: "1", id: "2" }));
+printGame(gameState()); // => another troop training
 
 nextStepN(3);
 printGame(gameState()); // => next day
 
 setGame((g) =>
-  moveSquad(g, { playerId: "dudu", squadId: "1", dir: { x: 1, y: 1 } })
+  moveTroops(g, { playerId: "dudu", troopId: "1", dir: { x: 1, y: 1 } })
 );
-printGame(gameState()); // => squad preparing to move
+printGame(gameState()); // => troop preparing to move
 
 nextStepN(1);
-printGame(gameState()); // => squad moved
+printGame(gameState()); // => troop moved
 
 setGame((g) =>
-  moveSquad(g, { playerId: "dudu", squadId: "1", dir: { x: 1, y: 0 } })
+  moveTroops(g, { playerId: "dudu", troopId: "1", dir: { x: 1, y: 0 } })
 );
 nextStepN(1);
 setGame((g) =>
-  moveSquad(g, { playerId: "dudu", squadId: "1", dir: { x: 1, y: 0 } })
+  moveTroops(g, { playerId: "dudu", troopId: "1", dir: { x: 1, y: 0 } })
 );
 nextStepN(1);
 setGame((g) =>
-  moveSquad(g, { playerId: "dudu", squadId: "1", dir: { x: 1, y: 0 } })
+  moveTroops(g, { playerId: "dudu", troopId: "1", dir: { x: 1, y: 0 } })
 );
 nextStepN(1);
 setGame((g) =>
-  moveSquad(g, { playerId: "dudu", squadId: "1", dir: { x: 1, y: 0 } })
+  moveTroops(g, { playerId: "dudu", troopId: "1", dir: { x: 1, y: 0 } })
 );
 nextStepN(1);
-printGame(gameState()); // => squad moved
+printGame(gameState()); // => troop moved

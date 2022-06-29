@@ -1,8 +1,8 @@
 import { v4 as uuid } from "uuid";
-import { Position, Squad, TrainingSquad } from "./types";
+import { Position, Troop, TrainingTroop } from "./types";
 
 const deployTrainedTroop = (pos: Position) =>
-  ({ type, soldiers, id }: TrainingSquad): Squad => ({
+  ({ type, soldiers, id }: TrainingTroop): Troop => ({
     id: id || uuid(),
     type,
     soldiers,

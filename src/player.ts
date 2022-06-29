@@ -12,7 +12,7 @@ const newPlayer = ({ x, y, id, name }: PlayerInput): Player => ({
 
 const playerToBoard = ({ pos, name, id }: Player): BoardCellUpdate => ({
   pos,
-  fn: (p) => ({ ...p, player: { name, id } }),
+  fn: (bc) => ({ ...bc, player: { name, id } }),
 });
 
 export { newPlayer, playerToBoard };

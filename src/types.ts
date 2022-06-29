@@ -42,7 +42,7 @@ type BoardCellUpdate = {
   fn: (cell: BoardCell) => BoardCell;
 }
 
-type Board = Array<Array<any>>
+type Board = Array<Array<BoardCell>>
 
 type Game = {
   players: Player[];

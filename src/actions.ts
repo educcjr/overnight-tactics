@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import { initBoard, updateBoardPos } from "./board.js";
+import { newBoard, updateBoardPos } from "./board.js";
 import {
   POPULATION_GROWTH,
   POPULATION_PRODUCTION,
@@ -14,7 +14,7 @@ import { BoardCellUpdate, Game, Player, PlayerInput, Position, Squad } from "./t
 
 // Starts a new game.
 const newGame = ({ boardSize }: { boardSize: number }): Game => ({
-  board: initBoard({ size: boardSize }),
+  board: newBoard({ size: boardSize }),
   players: [],
   step: 0,
 });
@@ -76,7 +76,7 @@ const nextStep = ({ step, players, board }: Game): Partial<Game> => {
       .flat(),
   ].reduce(
     (acc, curr) => updateBoardPos(acc, curr),
-    initBoard({ size: board.length })
+    newBoard({ size: board.length })
   );
 
   return {
